@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  web:
+    image: nginx:alpine
+    container_name: test-holamundo
+    restart: unless-stopped
+    networks:
+      - vpn_net
+    volumes:
+      - ./html:/usr/share/nginx/html:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.test.rule=Host(`edusnapec.online`)"
+      - "traefik.http.routers.test.entrypoints=http"
+      - "traefik.http.routers.test.middlewares=https-redirect"
+      - "traefik.http.routers.test-secure.rule=Host(`edusnapec.online`)"
+      - "traefik.http.routers.test-secure.entrypoints=https"
+      - "traefik.http.routers.test-secure.tls=true"
+      - "traefik.http.routers.test-secure.tls.certresolver=cloudflare"
+      - "traefik.http.services.test.loadbalancer.server.port=80"
+
+networks:
+  vpn_net:
+    external: true
